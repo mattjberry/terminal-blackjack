@@ -2,3 +2,6 @@
  * Main execution file for TerminalBlackjack */
 
 
+void main() {
+
+}
