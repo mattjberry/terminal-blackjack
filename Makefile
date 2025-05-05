@@ -6,16 +6,26 @@ CFLAGS=-std=c++17 -Wall -I.
 SRCS= main.cpp \
       card.cpp \
       deck.cpp
+
+OBJDIR = build
 OBJS=$(SRCS:.cpp=.o)
+OBJS := $(addprefix $(OBJDIR)/, $(OBJS))
+
 TARGET=terminal_blackjack
 
+
 .PHONY: all clean
+
+all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) $^ -o $@
 
-%.o: %.cpp
+$(OBJDIR)/%.o: %.cpp $(OBJDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
+
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -rf $(OBJDIR) $(TARGET)
