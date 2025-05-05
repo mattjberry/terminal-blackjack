@@ -1,7 +1,9 @@
 /* Created by Matt Berry
  * Main execution file for TerminalBlackjack */
 
+#include "main.h"
 
-void main() {
-
+int main() {
+  cout << "Running from main\n";
+  return 0;
 }
