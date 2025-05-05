@@ -42,7 +42,7 @@ Deck::Deck() {
    * millisecond there is very little chance of a duplicated shuffle pattern */
 
   // shuffle
-  std::shuffle(this->cards.begin(), this->cards.end(), seed);
+  std::shuffle(this->cards.begin(), this->cards.end(), rng);
 }
 
 /* Deal one card, removing from the deck
