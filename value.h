@@ -1,5 +1,8 @@
 /* Create by Matt Berry */
 
+#ifndef VALUE_H 
+#define VALUE_H
+
 /* Represents the face value of a playing card */
 enum class Value : unsigned {
   Ace = 1,
@@ -16,3 +19,5 @@ enum class Value : unsigned {
   Queen,
   King
 };
+
+#endif

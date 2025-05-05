@@ -1,5 +1,8 @@
 /* Created by Matt Berry */
 
+#ifndef SUIT_H
+#define SUIT_H
+
 /* Classic playing card suits */
 enum class Suit : unsigned {
   Clubs,
@@ -7,3 +10,5 @@ enum class Suit : unsigned {
   Hearts,
   Spades
 };
+
+#endif
