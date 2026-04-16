@@ -329,8 +329,8 @@ void Game::playerTurn(int handIdx, bool fromSplit) {
 
         std::cout << "  Actions: [H]it  [S]tand";
         if (canDouble)    std::cout << "  [D]ouble";
-        if (canSplit)     std::cout << "  [P]split";
-        if (canSurrender) std::cout << "  [Q]surrender";
+        if (canSplit)     std::cout << "  [P] - Split";
+        if (canSurrender) std::cout << "  [Q] - Surrender";
         std::cout << "  " << std::flush;
 
         char key = input.readKey();
