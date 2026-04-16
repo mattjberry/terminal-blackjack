@@ -1,7 +1,10 @@
 # Terminal Blackjack
 
 A full functional blackjack game playable in the terminal!\
+
 Originally I was planning on creating this little game as an experiment for learning C++. After getting some structure fleshed out I ran out of free time to work on it and the project instead sat unfinished for quite some time. Coming back to it, I decided to convert this project into an experiment for AI-driven development. I used Claude Code to write all code, building off the skeleton I made. All prompts and decisions are logged in the corresponding file. 
+
+Have fun and see if you can defeat the evil blackjack dealer!
 
 ## Building
 
