@@ -5,7 +5,14 @@ CC=g++
 CFLAGS=-std=c++17 -Wall -I.
 SRCS= main.cpp \
       card.cpp \
-      deck.cpp
+      deck.cpp \
+      hand.cpp \
+      player.cpp \
+      dealer.cpp \
+      game.cpp \
+      persistence.cpp \
+      inputHandler.cpp \
+      outputHandler.cpp
 
 OBJDIR = build
 OBJS=$(SRCS:.cpp=.o)

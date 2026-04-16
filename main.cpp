@@ -4,6 +4,7 @@
 #include "main.h"
 
 int main() {
-  cout << "Running from main\n";
-  return 0;
+    Game game;
+    game.run();
+    return 0;
 }
