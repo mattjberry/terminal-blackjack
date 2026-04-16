@@ -13,10 +13,19 @@ static std::mt19937 quipRng(
         std::chrono::system_clock::now().time_since_epoch().count()));
 
 static const char* quipsStart[] = {
+    /* pessimistic */
     "Another victim approaches.",
     "The odds are never in your favour.",
     "Let's see how long you last.",
     "I've never lost. Not once.",
+    "Every chip you place is a chip closer to ruin.",
+    /* neutral / dry */
+    "Place your bet. The outcome is already decided.",
+    "I've seen that look before. It doesn't end well.",
+    /* almost encouraging */
+    "A bold wager. I respect that... for now.",
+    "Everyone wins their first round or two.",
+    "Perhaps today is your day. Stranger things have happened.",
 };
 
 static const char* quipsBust[] = {
@@ -24,6 +33,9 @@ static const char* quipsBust[] = {
     "Tsk tsk. You should have stopped.",
     "Over 21. What a shame.",
     "Greed is a virtue... for me.",
+    "And just like that, it's over.",
+    "You were so close. Then you weren't.",
+    "The cards don't lie.",
 };
 
 static const char* quipsPlayerWin[] = {
@@ -31,18 +43,27 @@ static const char* quipsPlayerWin[] = {
     "Enjoy it. It's the last time.",
     "I let you win that one.",
     "Interesting.",
+    "Take your winnings. While you still have them.",
+    "Don't smile too wide. The night is young.",
+    "Luck favours the foolish. For now.",
 };
 
 static const char* quipsBlackjack[] = {
     "...I'll remember that.",
     "Hmph. Don't get used to it.",
     "Natural 21. Well played... this time.",
+    "Twenty-one on the deal. You got lucky.",
+    "Charming. Truly.",
+    "I've seen better hands lose everything.",
 };
 
 static const char* quipsDealerBust[] = {
     "...that was intentional.",
     "I grow tired of this hand.",
     "Even I make mistakes. Rarely.",
+    "The deck betrayed me. It won't happen again.",
+    "Consider yourself fortunate.",
+    "A minor inconvenience.",
 };
 
 template<typename T, std::size_t N>

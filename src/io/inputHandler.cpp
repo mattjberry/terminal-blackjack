@@ -44,34 +44,6 @@ char InputHandler::readKey() {
     return static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
 }
 
-char InputHandler::readEscapeSequence() {
-    /* Set a short timeout so we don't block forever waiting for
-     * the rest of an escape sequence */
-    struct termios timed = origSettings;
-    timed.c_lflag &= ~(ICANON | ECHO);
-    timed.c_cc[VMIN]  = 0;
-    timed.c_cc[VTIME] = 1; /* 0.1 second */
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &timed);
-
-    char seq[2] = {0, 0};
-    if (read(STDIN_FILENO, &seq[0], 1) != 1) {
-        setRawMode();
-        return '\0';
-    }
-    if (read(STDIN_FILENO, &seq[1], 1) != 1) {
-        setRawMode();
-        return '\0';
-    }
-
-    setRawMode();
-
-    if (seq[0] == '[') {
-        if (seq[1] == 'A') return 'U'; /* up arrow   */
-        if (seq[1] == 'B') return 'D'; /* down arrow */
-    }
-    return '\0';
-}
-
 int InputHandler::selectBet(int balance) {
     /* Build list: $10 * 2^n capped at balance */
     std::vector<int> bets;
@@ -83,9 +55,8 @@ int InputHandler::selectBet(int balance) {
     int idx = 0;
 
     auto draw = [&]() {
-        /* UTF-8 up/down arrows ↑↓ */
         std::cout << "\r  Bet: $" << bets[idx]
-                  << "   [\xe2\x86\x91/\xe2\x86\x93 to change, Enter to confirm]   "
+                  << "   [- to decrease, +/= to increase, Enter to confirm]   "
                   << std::flush;
     };
 
@@ -99,12 +70,13 @@ int InputHandler::selectBet(int balance) {
             return bets[idx];
         }
 
-        if (c == '\033') {
-            char arrow = readEscapeSequence();
-            if (arrow == 'U' && idx < static_cast<int>(bets.size()) - 1) {
+        if (c == '+' || c == '=') {
+            if (idx < static_cast<int>(bets.size()) - 1) {
                 idx++;
                 draw();
-            } else if (arrow == 'D' && idx > 0) {
+            }
+        } else if (c == '-') {
+            if (idx > 0) {
                 idx--;
                 draw();
             }
