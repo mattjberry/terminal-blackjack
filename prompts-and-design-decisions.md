@@ -1,5 +1,7 @@
 # Prompts and Design Decisions
 
+This document includes all prompts used in generating this project and their output where applicable. All prompts that heavily modified code map to their own pull request. Some prompts were purely imformational.
+
 ## Initial Prompt
 **Original**
 I want to create a simple offline blackjack simulation game where players can play against a virtual dealer from their computers terminal. I have attached a pdf detailing the rules and basic flow of the game. 
@@ -26,7 +28,7 @@ _Nice To Haves_
 
 Originally I planned to write this game myself in C++. I haven’t had the time to do that so I decided to turn this project into an experiment with AI driven development. I have some existing code written in C++ as well as a Makefile. I’d like to continue to use C++ even if it isn’t maybe the most intuitive language for this use case. I think that the best approach for saving a user score between runs of the game would be a docker volume, but that approach is flexible. 
 
-**Reworked**
+**Reworked - Optimized by Claude for use in Claude Code**
 PLAN ONLY — do not write any code yet.
 Before writing a single line, produce a detailed implementation plan for the project described below. The plan should cover: project structure, class/module breakdown, data flow, persistence approach, third-party dependencies (if any), and any decisions made on the "flexibles" listed below. Flag any ambiguities or risks.
 
@@ -86,3 +88,54 @@ src/ root	main.h, main.cpp	Entry point
 Include strategy: GCC searches the including file's own directory first before checking -I paths, so same-directory includes (card.cpp → "card.h") required no changes. Only the 5 headers with cross-directory dependencies needed updating. -I. became -Isrc as the single root.
 Makefile pattern rule: $(patsubst src/%.cpp, build/%.o, ...) means build/ automatically mirrors src/ — build/card/hand.o, build/io/persistence.o, etc. The @mkdir -p $(dir $@) creates whatever subdirs are needed at compile time.
 
+**Arrow Handling Bug Fix**
+Nice, refactor/restructure-src-dirs branch  has been merged and deleted. I've found a bug with handling of the arrow keys. Bug appears both in the standard Mac terminal and in the Warp app terminal. Arrow keys simply don't register an input and the bet stays at $10. Check the existing code for a bug that may be handling this incorrectly, otherwise we may have to change the handling to other keys. My first choice for an alternative is '-' and '+', where we also interpret '=' as a '+' to avoid having to press shift. Create a new branch from main to address this issue.
+
+**Output**
+Found it. There are two bugs in readEscapeSequence():
+
+Line 54 — root cause: tcsetattr(STDIN_FILENO, TCSAFLUSH, &timed) uses TCSAFLUSH, which discards all pending input at the moment it's called. By the time readEscapeSequence runs, the [A bytes from the arrow key are already sitting in the kernel buffer — TCSAFLUSH throws them away before we can read them.
+Lines 58/62/66 — secondary: setRawMode() is called as a "restore" but it starts with tcgetattr(STDIN_FILENO, &origSettings), overwriting the saved original terminal settings with whatever is current (the timed settings). The destructor would then restore the wrong state.
+Even if we patched both (swap TCSAFLUSH → TCSANOW, store raw settings separately), escape sequence handling stays fragile — a bare Escape keypress would block the input loop waiting for bytes that never arrive. The -/+/= approach sidesteps all of it. Implementing that now.
+
+**Improving Output Variations**
+Before we close this branch, I want to add a couple more things. For each of the dealer dialogs, add more possible options matching their respective circumstances, for example:
+
+* When choosing the bet size, the dealer always says "The odds are never in your favour." Add three more possible dialog options with varying levels of optimism. 
+This will help the game feel more alive.
+
+**Output**
+Done. Here's what was added across all five pools:
+
+quipsStart (bet selection) — +6, grouped by tone:
+
+Pessimistic: "Every chip you place is a chip closer to ruin." / "Place your bet. The outcome is already decided." / "I've seen that look before. It doesn't end well."
+Almost encouraging: "A bold wager. I respect that... for now." / "Everyone wins their first round or two." / "Perhaps today is your day. Stranger things have happened."
+quipsBust — +3: "And just like that, it's over." / "You were so close. Then you weren't." / "The cards don't lie."
+
+quipsPlayerWin — +3: "Take your winnings. While you still have them." / "Don't smile too wide. The night is young." / "Luck favours the foolish. For now."
+
+quipsBlackjack — +3: "Twenty-one on the deal. You got lucky." / "Charming. Truly." / "I've seen better hands lose everything."
+
+quipsDealerBust — +3: "The deck betrayed me. It won't happen again." / "Consider yourself fortunate." / "A minor inconvenience."
+
+Ready to open the PR whenever you are.
+
+**Consistent Player Options**
+Just a small tweak I'd like to make,  on a new branch. Currently the player options display as [H]it [S]tand [D]ouble Down, then [P]split and [Q]surrender. This looks a bit awkward. Can you change it to [P] - Split and [Q] - Surrender
+
+**Concerning Windows Compatibility**
+Since we removed the arrow key handling, is there anything preventing this project from running on Windows as well as the already supported mac and linux?
+
+**Output**
+No — removing the arrow keys removed the escape-sequence parsing but the two POSIX-only dependencies that were always the real blockers are still there:
+
+1. inputHandler — termios / unistd.h (src/io/inputHandler.cpp)
+
+Raw single-key input (no Enter required, no echo) is implemented via tcgetattr/tcsetattr and read(STDIN_FILENO, ...). None of those exist on Windows. The Windows equivalent is _getch() from <conio.h>, or GetConsoleMode()/SetConsoleMode() from the Win32 console API.
+
+2. persistence — sys/stat.h, two-argument mkdir, HOME (src/io/persistence.cpp)
+
+mkdir(path, 0700) is the POSIX two-argument form. Windows only has _mkdir(path) (one argument, from <direct.h>).
+getenv("HOME") is not set by default on Windows — the equivalent is USERPROFILE or APPDATA.
+So the README restriction stays accurate. Making the game portable to Windows would require conditional compilation (#ifdef _WIN32) in both of those files — doable, but not trivial. The termios swap is the bigger of the two since it touches every keystroke.
