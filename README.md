@@ -15,3 +15,5 @@ Requires **g++ with C++17** support. Uses POSIX terminal APIs (`termios`, `unist
 ## Persistence
 
 Your balance is saved automatically after every round to `~/.terminal_blackjack/save.dat`.
+
+Yes you can just go change how much money you have, but that isn't very good sportsmanship and the casinos definetely don't like that movee.
