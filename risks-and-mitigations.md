@@ -1,0 +1,14 @@
+# Risks and Mitigations
+
+Identified during implementation planning and pre-merge review of the Terminal Blackjack project.
+
+| # | Risk / Ambiguity | Recommendation | Status |
+|---|-----------------|----------------|--------|
+| 1 | **`Value` enum ints don't match blackjack point values** — `Jack=11`, `Queen=12`, `King=13` in the enum, but all worth 10 in blackjack. | Handle in `Hand::value()` with a helper `cardPoints(Value)` that maps Jack/Queen/King → 10. Do not change the enum. | Resolved — `cardPoints()` implemented in [hand.cpp](hand.cpp); used in `Hand::value()` and `Hand::isSoft()`. |
+| 2 | **Split eligibility — same Value or same point value?** Standard casino rule is same face value (Jack ≠ Queen), but some allow any two 10-value cards. | Same `Value` enum value only. Simpler, standard, and avoids ambiguity. | Resolved — `Hand::isPair()` compares `Value` enum directly. |
+| 3 | **`Deck` is constructed once in `Game`.** To reshuffle per round, `Game` must re-create the `Deck` object each round. | Declare `deck` as `std::optional<Deck>` or a pointer, reset it at the top of `playRound()`. | Resolved — `Game` holds `std::optional<Deck>`; `newDeck()` calls `deck.emplace()` at the top of every round. |
+| 4 | **`main.h` uses `using namespace std` in a header** — not ideal practice. | Leave unchanged for now (existing file); avoid adding more `using namespace` statements in new headers. | Accepted — `main.h` is a pre-existing convenience header and was left as-is. No new headers introduce `using namespace std`. |
+| 5 | **Arrow-key support on non-ANSI terminals** — rare but possible. | If escape sequence is malformed, fall back to treating input as a regular key and ignore the arrow attempt. | Resolved — `InputHandler::readEscapeSequence()` returns `'\0'` for any unrecognised sequence; `selectBet()` ignores `'\0'` and re-prompts. |
+| 6 | **Insurance side-bet UX** — needs a distinct prompt and clear accounting. | Show a dedicated insurance prompt line; store as a separate `int insuranceBet` on `Player`. | Resolved — `OutputHandler::displayInsurancePrompt()` renders a dedicated line; `Player::insuranceBet` is tracked and deducted separately from the main hand bet. **Note:** pre-merge review also caught a payout bug — insurance was paying `bet × 2` (profit only) instead of `bet × 3` (profit + stake return). Fixed in [game.cpp](game.cpp). |
+| 7 | **Windows portability** — `termios` is POSIX only. | Not in scope. Note this in README. | Resolved — README now documents macOS/Linux requirement. |
+| 8 | **Bet exceeds balance edge case** | Clamp bet selector to never exceed `player.getBalance()`. Also validate before charging double-down/split. | Resolved — `InputHandler::selectBet()` builds its bet list as `$10 × 2ⁿ ≤ balance`; double-down and split both gate on `player.getBalance() >= handBet` before offering the action. |

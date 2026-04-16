@@ -7,6 +7,13 @@
 #include "suit.h"
 #include "value.h"
 #include "deck.h"
+#include "hand.h"
+#include "player.h"
+#include "dealer.h"
+#include "persistence.h"
+#include "inputHandler.h"
+#include "outputHandler.h"
+#include "game.h"
 
 #include <iostream>
 using namespace std;
