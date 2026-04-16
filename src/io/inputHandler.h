@@ -17,10 +17,9 @@ public:
     /* Read a single character; returns it uppercased */
     char readKey();
 
-    /* Arrow-key + Enter interactive bet selector.
-     * Displays the current bet inline and lets the player change it
-     * with ↑/↓ before pressing Enter to confirm.
-     * Returns the chosen bet amount. */
+    /* Interactive bet selector.
+     * Displays the current bet inline. Press - to decrease, +/= to increase,
+     * Enter to confirm. Returns the chosen bet amount. */
     int selectBet(int balance);
 
 private:
@@ -32,10 +31,6 @@ private:
 
     /* Read a raw byte without upper-casing (used internally) */
     char readRaw();
-
-    /* Try to consume an escape sequence; returns 'U' (up) / 'D' (down)
-     * or '\0' if the sequence is not a recognised arrow key */
-    char readEscapeSequence();
 };
 
 #endif
