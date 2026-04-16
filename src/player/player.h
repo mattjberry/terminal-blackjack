@@ -4,7 +4,7 @@
 #define PLAYER_H
 
 #include <vector>
-#include "hand.h"
+#include "card/hand.h"
 
 /* Represents the human player — holds balance and one or more hands (splits) */
 class Player {

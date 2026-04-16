@@ -4,12 +4,12 @@
 #define GAME_H
 
 #include <optional>
-#include "deck.h"
-#include "player.h"
-#include "dealer.h"
-#include "persistence.h"
-#include "inputHandler.h"
-#include "outputHandler.h"
+#include "card/deck.h"
+#include "player/player.h"
+#include "player/dealer.h"
+#include "io/persistence.h"
+#include "io/inputHandler.h"
+#include "io/outputHandler.h"
 
 /* Top-level game controller — owns all objects and runs the main loop */
 class Game {

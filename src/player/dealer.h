@@ -3,7 +3,7 @@
 #ifndef DEALER_H
 #define DEALER_H
 
-#include "hand.h"
+#include "card/hand.h"
 
 /* Represents the dealer — manages hole-card visibility and AI hit logic */
 class Dealer {

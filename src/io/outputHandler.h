@@ -4,9 +4,9 @@
 #define OUTPUTHANDLER_H
 
 #include <string>
-#include "hand.h"
-#include "player.h"
-#include "dealer.h"
+#include "card/hand.h"
+#include "player/player.h"
+#include "player/dealer.h"
 
 /* All display logic — uses ANSI escape codes for colour.
  * Methods are static; no state needed. */
